@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Material;
+use App\Http\Controllers\ProfileController;
 
 
 // Landing Page
@@ -108,47 +109,21 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // --- ROUTE UNTUK PROFILE ---
-Route::get('/profile', function () {
-    return view('profile');
-})->middleware('auth')->name('profile');
+// --- ROUTE UNTUK PROFILE ---
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. Menampilkan Halaman Profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    
+    // 2. Memproses Update (Hanya gunakan yang ini agar Cropper.js jalan)
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+});
+
+// HAPUS ATAU KOMENTARI KODE DI BAWAH INI (Yang Route::post('/profile', function...))
+// Karena kode ini yang bikin fitur crop kamu jadi "tertimpa" dan tidak berfungsi.
 
 use Illuminate\Support\Facades\Storage;
-
-Route::post('/profile', function () {
-    $user = auth::user();
-    
-    $requestData = request()->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-        'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Max 2MB
-        'current_password' => 'nullable|required_with:new_password',
-        'new_password' => 'nullable|min:8|confirmed',
-    ]);
-
-    // 1. Handle Update Foto
-    if (request()->hasFile('photo')) {
-        // Hapus foto lama jika ada
-        if ($user->profile_photo_path) {
-            Storage::disk('public')->delete($user->profile_photo_path);
-        }
-        $path = request()->file('photo')->store('profile-photos', 'public');
-        $user->profile_photo_path = $path;
-    }
-
-    // 2. Handle Ganti Password
-    if (request()->filled('new_password')) {
-        if (!Hash::check(request()->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password lama kamu salah nih! ❌']);
-        }
-        $user->password = Hash::make(request()->new_password);
-    }
-
-    $user->name = $requestData['name'];
-    $user->email = $requestData['email'];
-    $user->save();
-
-    return back()->with('success', 'Profil dan keamanan kamu berhasil di-update! ✨');
-})->middleware('auth');
 
 // --- ROUTE ADMIN AREA ---
 // Sekarang kita pakai alias 'isAdmin'

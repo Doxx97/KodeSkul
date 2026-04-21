@@ -31,7 +31,7 @@
                 <div class="w-full md:w-1/3 lg:w-1/4 space-y-3">
                     @php 
                         $tabs = [
-                            ['id' => 'html', 'label' => 'Frontend HTML', 'icon' => '🌐'],
+                            ['id' => 'html', 'label' => 'HTML Dasar', 'icon' => '🌐'],
                             ['id' => 'css', 'label' => 'Styling CSS', 'icon' => '🎨'],
                             ['id' => 'javascript', 'label' => 'Logic JavaScript', 'icon' => '⚡']
                         ];
