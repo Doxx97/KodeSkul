@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Material;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\MateriController;
+use App\Http\Controllers\MaterialController;
 
 // Landing Page
 Route::get('/', function () {
@@ -16,9 +17,13 @@ Route::get('/', function () {
 });
 
 // 1. Halaman Utama Materi (Tampilan 3 Kotak: HTML, CSS, JS)
-Route::get('/materi', function () {
-    return view('materi.pilih');
-})->name('materi.pilih');
+Route::get('/progres', function () {
+    // Ambil materi, diurutkan, lalu kelompokkan
+    $materiPerKategori = App\Models\Material::orderBy('id', 'asc')->get()->groupBy('category');
+    
+    // Ganti nama view jika kamu mengubah nama foldernya, atau biarkan tetap mengarah ke view materi yang sudah kita buat
+    return view('materi.progress', compact('materiPerKategori'));
+})->name('progres.index');
 
 // 2. Halaman List Materi Per Kategori (Setelah klik 'Mulai HTML', dll)
 Route::get('/materi-list/{category}', function ($category) {
@@ -31,14 +36,21 @@ Route::get('/materi-list/{category}', function ($category) {
     ]);
 })->name('materi.list_per_kategori');
 
-// 3. Halaman Detail Isi Materi (Saat klik 'Buka Materi')
-Route::get('/materi/baca/{id}', function ($id) {
-    // Mencari 1 data materi berdasarkan ID
-    $material = App\Models\Material::findOrFail($id);
+// Halaman Beranda (Dashboard Belajar Siswa)
+Route::get('/beranda', function () {
+    // Ambil semua materi dan kelompokkan berdasarkan kategori (html, css, js, dll)
+    $materiPerKategori = App\Models\Material::all()->groupBy('category');
     
-    // Mengirim variabel $material (tanpa 's') ke view
-    return view('materi.index', compact('material'));
-})->name('materi.show');
+    return view('beranda', compact('materiPerKategori'));
+})->name('beranda');
+
+// 3. Halaman Detail Isi Materi (Mengarah ke MateriController)
+Route::get('/materi/baca/{id}', 
+[MateriController::class, 'baca'])->name('materi.show');
+
+Route::post('/materi/{id}/submit-quiz', [MateriController::class, 'submitQuiz'])->name('materi.submit_quiz')->middleware('auth');
+
+Route::post('/materi/{id}/complete', [MateriController::class, 'complete'])->name('materi.complete')->middleware('auth');
 
 // Quiz Page
 Route::get('/quiz', function () {
@@ -76,8 +88,7 @@ Route::post('/register', function () {
 
     // Langsung otomatis login setelah daftar
     Auth::login($user);
-    return redirect('/')->with('success', 'Selamat datang di E-Learning SMK! 🎉');
-});
+return redirect('/beranda')->with('success', 'Selamat datang di E-Learning SMK! 🎉');});
 
 // --- ROUTE UNTUK LOGIN MANUAL (EMAIL & PASSWORD) ---
 Route::post('/login', function () {
@@ -90,8 +101,7 @@ Route::post('/login', function () {
     // Coba login
     if (Auth::attempt($credentials)) {
         request()->session()->regenerate();
-        return redirect()->intended('/')->with('success', 'Selamat datang kembali! 🎉');
-    }
+return redirect()->intended('/beranda')->with('success', 'Selamat datang kembali! 🎉');    }
 
     // Jika gagal, kembalikan ke halaman login dengan pesan error
     return back()->withErrors([
@@ -129,27 +139,16 @@ use Illuminate\Support\Facades\Storage;
 // Sekarang kita pakai alias 'isAdmin'
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
 
-    Route::get('/dashboard', function () {
-        $materials = Material::latest()->get();
-        return view('admin.dashboard', compact('materials'));
-    });
+    // Dashboard Admin
+    Route::get('/dashboard', [MaterialController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/materi/create', function () {
-        return view('admin.create-materi');
-    });
+    // CRUD Materi (Semua diarahkan ke Controller)
+    Route::get('/materi/create', [MaterialController::class, 'create'])->name('admin.materi.create');
+    Route::post('/materi', [MaterialController::class, 'store'])->name('admin.materi.store');
+    Route::get('/materi/{id}/edit', [MaterialController::class, 'edit'])->name('admin.materi.edit');
+    Route::put('/materi/{id}', [MaterialController::class, 'update'])->name('admin.materi.update');
+    Route::delete('/materi/{id}', [MaterialController::class, 'destroy'])->name('admin.materi.destroy');
 
-    Route::post('/materi', function () {
-        $data = request()->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'required|in:HTML,CSS,JavaScript',
-            'description' => 'required|string',
-            'content' => 'required|string',
-        ]);
-
-        Material::create($data);
-
-        return redirect('/admin/dashboard')->with('success', 'Materi baru berhasil di-publish! 🚀');
-    });
 });
 
 Route::get('/cek-role', function() {

@@ -38,10 +38,25 @@
                 </td>
                 <td class="px-6 py-4 font-bold text-slate-800">{{ $materi->title }}</td>
                 <td class="px-6 py-4">{{ $materi->created_at->format('d M Y') }}</td>
-                <td class="px-6 py-4 text-center space-x-2">
-                    <button class="text-indigo-600 hover:underline font-semibold">Edit</button>
-                    <button class="text-red-600 hover:underline font-semibold">Hapus</button>
+                
+                {{-- BAGIAN AKSI YANG SUDAH DIUBAH --}}
+                <td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-4">
+                        <a href="{{ route('admin.materi.edit', $materi->id) }}" class="text-indigo-600 hover:underline font-semibold">
+                            Edit
+                        </a>
+                        
+                        <form action="{{ route('admin.materi.destroy', $materi->id) }}" method="POST" class="inline-block form-delete">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-delete px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-medium rounded-lg transition-colors">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
                 </td>
+                {{-- AKHIR BAGIAN AKSI --}}
+
             </tr>
             @empty
             <tr>
@@ -53,4 +68,40 @@
         </tbody>
     </table>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Mencari semua tombol dengan class 'btn-delete'
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // Mencegah form langsung terkirim
+            
+            const form = this.closest('form'); // Mengambil form terdekat dari tombol yang diklik
+
+            // Memunculkan SweetAlert yang cantik
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Materi ini akan dihapus secara permanen dan tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Warna merah khas Tailwind (red-500)
+                cancelButtonColor: '#94a3b8',  // Warna abu-abu Tailwind (slate-400)
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                background: '#ffffff',
+                backdrop: `rgba(0,0,123,0.1)`, // Efek blur/gelap di belakang
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl border border-slate-100', // Membuat ujungnya membulat
+                    confirmButton: 'rounded-xl font-bold px-6 py-3',
+                    cancelButton: 'rounded-xl font-bold px-6 py-3'
+                }
+            }).then((result) => {
+                // Jika tombol "Ya, Hapus!" diklik
+                if (result.isConfirmed) {
+                    form.submit(); // Baru form-nya dikirim (materi dihapus)
+                }
+            });
+        });
+    });
+</script>
 @endsection

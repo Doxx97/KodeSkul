@@ -1,145 +1,98 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KodeSkul - E-Learning Masa Kini</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        /* 1. Animasi Masuk (Fade In + Slide Up) */
+        .animate-fade-in-up {
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        
+        /* Jeda waktu animasi agar elemen muncul bergantian */
+        .delay-100 { animation-delay: 0.2s; }
+        .delay-200 { animation-delay: 0.4s; }
+        .delay-300 { animation-delay: 0.6s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-@section('content')
-<div class="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
-    <div class="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-purple-600 bg-purple-100 rounded-full uppercase">
-        🚀 Belajar Web Dev Kelas 11
-    </div>
-    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-        Ngoding Itu Gampang,<br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-pink-500">Kalo Tau Caranya.</span>
-    </h1>
-    <p class="text-slate-500 text-lg md:text-xl max-w-2xl mb-10">
-        Kuasai HTML, CSS, dan JavaScript dari nol. Didesain khusus buat anak SMK biar langsung siap bikin website keren.
-    </p>
-    <div class="flex gap-4">
-        <a href="/materi" class="px-8 py-4 bg-indigo-600 text-white font-bold rounded-full hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition transform hover:-translate-y-1">
-            Mulai Belajar
-        </a>
-        <a href="/quiz" class="px-8 py-4 bg-white text-slate-900 font-bold border-2 border-slate-200 rounded-full hover:border-slate-900 transition">
-            Coba Quiz
-        </a>
-    </div>
-</div>
+        /* 2. Animasi Background Melayang */
+        .floating-shape {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 overflow-hidden relative flex items-center justify-center min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
 
-<section class="bg-slate-50 py-20" x-data="{ activeTab: 'html' }">
-    <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-slate-900 mb-8">Pilih Jalur Belajarmu 🗺️</h2>
-            
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="w-full md:w-1/3 lg:w-1/4 space-y-3">
-                    @php 
-                        $tabs = [
-                            ['id' => 'html', 'label' => 'HTML Dasar', 'icon' => '🌐'],
-                            ['id' => 'css', 'label' => 'Styling CSS', 'icon' => '🎨'],
-                            ['id' => 'javascript', 'label' => 'Logic JavaScript', 'icon' => '⚡']
-                        ];
-                    @endphp
+    {{-- Efek Latar Belakang Estetik (Blob Colors) --}}
+    <div class="absolute top-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 floating-shape"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-rose-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 floating-shape" style="animation-delay: 2s;"></div>
 
-                    @foreach($tabs as $tab)
-                    <button 
-                        @click="activeTab = '{{ $tab['id'] }}'"
-                        :class="activeTab === '{{ $tab['id'] }}' ? 'bg-white border-indigo-600 shadow-md ring-1 ring-indigo-600' : 'bg-transparent border-transparent text-slate-500 hover:bg-slate-200'"
-                        class="w-full flex items-center p-4 rounded-2xl border-2 transition-all duration-200"
-                    >
-                        <span class="text-2xl mr-4">{{ $tab['icon'] }}</span>
-                        <span class="font-bold">{{ $tab['label'] }}</span>
+    {{-- Konten Utama Hero --}}
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+        
+        {{-- Badge Animasi --}}
+        <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-md text-indigo-700 font-bold text-sm mb-8 animate-fade-in-up border border-indigo-100 shadow-sm">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-600"></span>
+            </span>
+            E-Learning SMK Interaktif
+        </div>
+        
+        {{-- Judul Utama --}}
+        <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight animate-fade-in-up delay-100 leading-tight">
+            Belajar Coding Lebih <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-rose-500">Seru & Menyenangkan</span>
+        </h1>
+        
+        {{-- Deskripsi Singkat --}}
+        <p class="text-lg md:text-xl text-slate-600 mb-12 leading-relaxed max-w-2xl mx-auto animate-fade-in-up delay-200 font-medium">
+            Tinggalkan cara lama! Di KodeSkul, kamu akan menguasai HTML, CSS, dan JavaScript lewat video interaktif dan sistem kuis yang langsung muncul saat kamu menonton.
+        </p>
+        
+        {{-- Tombol Aksi (Otomatis menyesuaikan status login) --}}
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-5 animate-fade-in-up delay-300">
+            @auth
+                {{-- Jika User SUDAH Login --}}
+                <a href="/beranda" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-extrabold rounded-2xl hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-200 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                    🚀 Lanjut Belajar Yuk!
+                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full sm:w-auto px-8 py-4 bg-white text-slate-500 font-bold rounded-2xl hover:text-red-500 hover:bg-red-50 transition-all">
+                        Logout
                     </button>
-                    @endforeach
-                </div>
-
-                <div class="w-full md:w-2/3 lg:w-3/4">
-                    @foreach(['html', 'css', 'javascript'] as $cat)
-                    <div x-show="activeTab === '{{ $cat }}'" x-transition class="space-y-4">
-                       @php 
-                            $filteredMaterials = $materials->filter(function($item) use ($cat) {
-                                return strtolower(trim($item->category)) == strtolower($cat);
-                            });
-                        @endphp
-                        @forelse($filteredMaterials as $item)
-                        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between hover:shadow-md transition group">
-                            <div class="flex-1">
-                                <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $item->title }}</h3>
-                                <div class="flex flex-wrap gap-4 text-sm text-slate-400 font-medium">
-                                    <span class="flex items-center gap-1">⏱️ 15 Menit</span>
-                                    <span class="flex items-center gap-1">⭐ 4.9</span>
-                                    <span class="flex items-center gap-1 text-indigo-500">📈 Pemula</span>
-                                </div>
-                            </div>
-                            <div class="mt-4 sm:mt-0">
-                                <a href="{{ route('materi.show', $item->id) }}" class="inline-block px-6 py-3 bg-slate-50 text-slate-700 font-bold rounded-2xl border border-slate-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all text-sm shadow-sm">
-                                    Belajar sekarang
-                                </a>
-                            </div>
-                        </div>
-                        @empty
-                        <div class="p-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
-                            <p class="text-slate-400 italic">Materi {{ strtoupper($cat) }} belum tersedia. Admin sedang mengetik... ✍️</p>
-                        </div>
-                        @endforelse
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+                </form>
+            @else
+                {{-- Jika User BELUM Login --}}
+                <a href="/login" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 text-white font-extrabold rounded-2xl hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-200 transition-all transform hover:-translate-y-1">
+                    Masuk Sekarang
+                </a>
+                <a href="/register" class="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 font-bold rounded-2xl border-2 border-slate-200 hover:border-indigo-600 hover:text-indigo-600 transition-all transform hover:-translate-y-1">
+                    Daftar Akun Baru
+                </a>
+            @endauth
         </div>
     </div>
-</section>
-<section class="bg-white py-12 border-t border-slate-100">
-    <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
-            
-            <div class="md:w-5/12">
-                <h3 class="text-slate-400 font-semibold mb-3 uppercase tracking-wider text-[11px]">Alamat</h3>
-                <p class="text-slate-600 text-sm md:text-base leading-relaxed mb-6 max-w-sm">
-                    Universitas Negeri Malang Jl. Semarang No.5, Sumbersari, Kec. Lowokwaru, Kota Malang, Jawa Timur 65145
-                </p>
-                
-                <div class="flex gap-4 items-center">
-                    <a href="#" class="opacity-80 hover:opacity-100 transition shadow-sm">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="w-5 h-5" alt="Instagram">
-                    </a>
-                    <a href="#" class="opacity-80 hover:opacity-100 transition">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" class="w-5 h-5" alt="Facebook">
-                    </a>
-                    <a href="#" class="opacity-80 hover:opacity-100 transition">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" class="w-5 h-5" alt="LinkedIn">
-                    </a>
-                    <a href="#" class="text-lg text-black opacity-80 hover:opacity-100 transition">
-                         <i class="fa-brands fa-tiktok text-sm"></i>
-                    </a>
-                    <a href="#" class="opacity-80 hover:opacity-100 transition">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_(2017).svg" class="w-6 h-6" alt="YouTube">
-                    </a>
-                    <a href="#" class="text-sm text-black font-bold opacity-80 hover:opacity-100 transition">
-                        𝕏
-                    </a>
-                </div>
-            </div>
 
-            <div class="flex gap-16 md:gap-24">
-                <div>
-                    <h4 class="text-slate-400 font-semibold mb-4 uppercase tracking-wider text-[11px]">Company</h4>
-                    <ul class="space-y-2 text-[13px] text-slate-700 font-medium">
-                        <li><a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Hubungi Kami</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Blog</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">FAQ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-slate-400 font-semibold mb-4 uppercase tracking-wider text-[11px]">Product</h4>
-                    <ul class="space-y-2 text-[13px] text-slate-700 font-medium">
-                        <li><a href="#" class="hover:text-indigo-600 transition">Elite</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Event</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Challenge</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Mentoring</a></li>
-                        <li><a href="#" class="hover:text-indigo-600 transition">Jobs</a></li>
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-@endsection
+</body>
+</html>

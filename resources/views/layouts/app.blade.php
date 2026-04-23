@@ -3,128 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KodeSkul</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
-<body class="bg-slate-50 text-slate-900 antialiased font-sans">
+    <title>KodeSkul E-Learning</title>
     
-    @if(session('success'))
-        <div id="toast-success" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] flex items-center px-6 py-3 mb-4 text-slate-900 bg-white rounded-full shadow-xl border border-slate-100 transition-all duration-500 opacity-0 translate-y-[-1rem]">
-            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-full">
-                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                </svg>
-            </div>
-            <div class="ms-3 text-sm font-bold">{{ session('success') }}</div>
+    {{-- Memanggil Tailwind CSS --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    {{-- Font tambahan agar terlihat lebih modern --}}
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+    {{-- ================= NAVBAR MULAI DI SINI ================= --}}
+    <nav class="flex justify-between items-center px-6 lg:px-12 py-4 bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        
+        {{-- BAGIAN KIRI: Logo & Menu Navigasi --}}
+        <div class="flex items-center gap-10">
+            {{-- Logo --}}
+            <a href="/" class="text-2xl font-extrabold text-indigo-600 tracking-tight flex items-center gap-2">
+                <span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-sm">{"}</span>
+                KodeSkul.
+            </a>
+
+            {{-- Menu Navigasi dengan Penanda Aktif & Animasi --}}
+        <div class="hidden md:flex items-center gap-8 font-semibold text-sm">
+            
+           {{-- MENU BERANDA --}}
+{{-- Aktif jika URL adalah /beranda ATAU diawali dengan /materi-list/ --}}
+<a href="/beranda" class="relative py-2 group {{ request()->is('beranda') || request()->is('materi-list*') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }} transition-colors duration-300 font-medium">
+    Beranda
+    <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 h-[3px] bg-indigo-600 rounded-t-full transition-all duration-300 {{ request()->is('beranda') || request()->is('materi-list*') ? 'w-full' : 'w-0 group-hover:w-full opacity-50 group-hover:opacity-100' }}"></span>
+</a>
+
+{{-- MENU PROGRES (Pengganti Materi) --}}
+{{-- Hanya aktif jika URL adalah /progres --}}
+<a href="/progres" class="relative py-2 group {{ request()->is('progres*') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }} transition-colors duration-300 font-medium">
+    Progres
+    <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 h-[3px] bg-indigo-600 rounded-t-full transition-all duration-300 {{ request()->is('progres*') ? 'w-full' : 'w-0 group-hover:w-full opacity-50 group-hover:opacity-100' }}"></span>
+</a>
+
+{{-- MENU QUIZ --}}
+<a href="/quiz" class="relative py-2 group {{ request()->is('quiz*') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }} transition-colors duration-300 font-medium">
+    Quiz
+    <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 h-[3px] bg-indigo-600 rounded-t-full transition-all duration-300 {{ request()->is('quiz*') ? 'w-full' : 'w-0 group-hover:w-full opacity-50 group-hover:opacity-100' }}"></span>
+</a>
+
         </div>
-    @endif
+        </div>
 
-    @if(session('error'))
-        <div id="toast-error" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] flex items-center px-6 py-3 mb-4 text-white bg-red-500 rounded-full shadow-xl transition-all duration-500 opacity-0 translate-y-[-1rem]">
-        <div class="ms-3 text-sm font-bold">{{ session('error') }}</div>
-    </div>
-    @endif
+        {{-- BAGIAN KANAN: Avatar / Profil / Login --}}
+        <div class="flex items-center gap-4">
+            @auth
+                {{-- Jika Admin, tampilkan link ke Dashboard --}}
+                @if(Auth::user()->role === 'admin')
+                    <a href="/admin/dashboard" class="hidden md:block text-sm font-bold text-slate-400 hover:text-indigo-600 transition mr-2">
+                        Dashboard Admin
+                    </a>
+                @endif
 
-    <nav class="w-full p-6 flex justify-between items-center bg-white shadow-sm relative z-50">
-    <a href="/" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">
-        KodeSkul.
-    </a>
-    <div class="flex items-center space-x-6 font-semibold text-sm">
-        <a href="{{ route('materi.pilih') }}" class="hover:text-indigo-500 transition">Materi</a>
-        <a href="/quiz" class="hover:text-indigo-500 transition">Quiz</a>
-        
-        @guest
-            <a href="/login" class="px-5 py-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition">Login</a>
-        @endguest
-
-        @auth
-            <div class="relative">
-                <button id="profileBtn" class="flex items-center focus:outline-none transition transform hover:scale-105">
-                    <img src="{{ auth()->user()->profile_photo_path ? asset('storage/'.auth()->user()->profile_photo_path) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=6366f1&color=fff' }}" 
-                        alt="Profile" 
-                        class="w-10 h-10 rounded-full border-2 border-indigo-100 shadow-sm object-cover">
-                </button>
-                
-                <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 overflow-hidden">
-                    <div class="px-4 py-3 border-b border-slate-50 mb-1">
-                        <p class="text-xs text-slate-400">Signed in as</p>
-                        <p class="text-sm font-bold text-slate-800 truncate">{{ auth()->user()->name }}</p>
-                    </div>
-                    <a href="/profile" class="block px-4 py-2 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition">Edit Profile</a>
-                    
-                    <form action="/logout" method="POST" class="w-full">
-                        @csrf
-                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                            Log Out
-                        </button>
-                    </form>
+                {{-- Area Profil User --}}
+                <div class="flex items-center gap-3">
+                    <a href="/profile" class="flex items-center gap-3 cursor-pointer group">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-bold text-slate-700 leading-none group-hover:text-indigo-600 transition">{{ Auth::user()->name }}</p>
+                            <p class="text-[11px] text-slate-400 mt-1 capitalize">{{ Auth::user()->role ?? 'Siswa' }}</p>
+                        </div>
+                        <img src="{{ Auth::user()->profile_photo_path ? asset('storage/' . Auth::user()->profile_photo_path) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=e0e7ff&color=4f46e5' }}" 
+                             alt="Profile" 
+                             class="w-10 h-10 rounded-full object-cover border-2 border-indigo-50 group-hover:border-indigo-300 transition">
+                    </a>
                 </div>
-            </div>
-        @endauth
-    </div>
-</nav>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.getElementById('profileBtn');
-        const dropdown = document.getElementById('profileDropdown');
-        
-        if(btn && dropdown) {
-            btn.addEventListener('click', () => {
-                dropdown.classList.toggle('hidden');
-            });
-
-            // Tutup dropdown kalau klik di luar
-            document.addEventListener('click', (e) => {
-                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                }
-            });
-        }
-    });
-    document.addEventListener('DOMContentLoaded', () => {
-                const toast = document.getElementById('toast-success');
                 
-                // Animasi masuk (muncul)
-                setTimeout(() => {
-                    toast.classList.remove('opacity-0', 'translate-y-[-1rem]');
-                    toast.classList.add('opacity-100', 'translate-y-0');
-                }, 100);
+                {{-- Tombol Logout --}}
+                <form action="{{ route('logout') }}" method="POST" class="ml-1 pl-4 border-l border-slate-200">
+                    @csrf
+                    <button type="submit" class="p-2 text-slate-400 hover:text-red-500 transition rounded-xl hover:bg-red-50" title="Keluar">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
+                </form>
+            @else
+                {{-- Jika Belum Login --}}
+                <a href="/login" class="px-6 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 transition-all transform hover:-translate-y-0.5">
+                    Masuk / Daftar
+                </a>
+            @endauth
+        </div>
 
-                // Animasi keluar (hilang otomatis setelah 3 detik)
-                setTimeout(() => {
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', 'translate-y-[-1rem]');
-                    
-                    // Hapus elemen dari DOM setelah animasi selesai
-                    setTimeout(() => {
-                        toast.remove();
-                    }, 500);
-                }, 3000); // 3000 milidetik = 3 detik
-            });
-    document.addEventListener('DOMContentLoaded', () => {
-            const toastErr = document.getElementById('toast-error');
-            setTimeout(() => {
-                toastErr.classList.remove('opacity-0', 'translate-y-[-1rem]');
-                toastErr.classList.add('opacity-100', 'translate-y-0');
-            }, 100);
+    </nav>
+    {{-- ================= NAVBAR SELESAI ================= --}}
 
-            setTimeout(() => {
-                toastErr.classList.remove('opacity-100', 'translate-y-0');
-                toastErr.classList.add('opacity-0', 'translate-y-[-1rem]');
-                setTimeout(() => { toastErr.remove(); }, 500);
-            }, 3000);
-        });
-</script>
-
+    {{-- AREA KONTEN UTAMA DARI VIEW LAIN (Misal: index.blade.php) --}}
     <main class="min-h-screen">
         @yield('content')
     </main>
 
-    <footer class="text-center p-6 bg-slate-900 text-slate-400 text-sm mt-12">
-        <p>© 2026 KodeSkul. Built with Laravel & Tailwind.</p>
+    {{-- FOOTER --}}
+    <footer class="bg-white border-t border-slate-200 py-8 mt-12 text-center text-sm text-slate-500">
+        <p>&copy; {{ date('Y') }} KodeSkul E-Learning SMK. Dibuat dengan ❤️ untuk pembelajaran.</p>
     </footer>
 
 </body>
