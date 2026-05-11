@@ -7,8 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Material;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ChatbotController;
+use Illuminate\Support\Facades\Http;
 
 // Landing Page
 Route::get('/', function () {
@@ -25,16 +29,26 @@ Route::get('/progres', function () {
     return view('materi.progress', compact('materiPerKategori'));
 })->name('progres.index');
 
-// 2. Halaman List Materi Per Kategori (Setelah klik 'Mulai HTML', dll)
+// 2. Halaman List Materi Per Kategori (Setelah klik 'Mulai HTML', dll) 
 Route::get('/materi-list/{category}', function ($category) {
-    // Pakai where('category', 'like', $category) agar lebih fleksibel
-    $materials = App\Models\Material::where('category', $category)->latest()->get();
+    // Kita buat pemetaan (mapping) agar 'javascript' di URL mencari 'JS' di database
+    $dbCategory = $category;
+    if (strtolower($category) == 'javascript') {
+        $dbCategory = 'JS';
+    }
+
+    // Gunakan strtoupper/strtolower agar lebih aman
+    $materials = App\Models\Material::where('category', $dbCategory)->orderBy('id', 'asc')->get();
     
     return view('materi.list_per_kategori', [
         'materials' => $materials,
-        'categoryName' => strtoupper($category)
+        'categoryName' => ($dbCategory == 'JS') ? 'JAVASCRIPT' : strtoupper($dbCategory)
     ]);
 })->name('materi.list_per_kategori');
+
+// Route untuk User (Tampilan Blog)// Route untuk user melihat daftar blog
+Route::get('/materi-belajar', [ArticleController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [ArticleController::class, 'show'])->name('blog.show');
 
 // Halaman Beranda (Dashboard Belajar Siswa)
 Route::get('/beranda', function () {
@@ -43,6 +57,11 @@ Route::get('/beranda', function () {
     
     return view('beranda', compact('materiPerKategori'));
 })->name('beranda');
+
+// Halaman Roadmap (Tampilan roadmap belajar)
+Route::get('/roadmap', function () {
+    return view('roadmap'); // Pastikan Anda sudah membuat file resources/views/roadmap.blade.php
+})->name('roadmap');
 
 // 3. Halaman Detail Isi Materi (Mengarah ke MateriController)
 Route::get('/materi/baca/{id}', 
@@ -56,6 +75,8 @@ Route::post('/materi/{id}/complete', [MateriController::class, 'complete'])->nam
 Route::get('/quiz', function () {
     return view('quiz');
 });
+
+Route::post('/exams/save-score', [App\Http\Controllers\CertificateController::class, 'saveScore'])->name('exams.saveScore');
 
 // Login Page (Nanti bisa diganti pakai Laravel Breeze/Jetstream)
 Route::get('/login', function () {
@@ -122,11 +143,15 @@ Route::post('/logout', function () {
 // --- ROUTE UNTUK PROFILE ---
 Route::middleware(['auth'])->group(function () {
     
-    // 1. Menampilkan Halaman Profil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+   // Satu route GET untuk profil
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     
-    // 2. Memproses Update (Hanya gunakan yang ini agar Cropper.js jalan)
+    // Route POST untuk update profil (Cropper)
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Route Klaim Sertifikat (Tambahkan {categoryName})
+    Route::post('/claim-certificate/{categoryName}', [CertificateController::class, 'store'])->name('certificate.store');
+    Route::get('/certificate/download', [CertificateController::class, 'download'])->name('certificate.download');
 
 });
 
@@ -148,12 +173,36 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
     Route::get('/materi/{id}/edit', [MaterialController::class, 'edit'])->name('admin.materi.edit');
     Route::put('/materi/{id}', [MaterialController::class, 'update'])->name('admin.materi.update');
     Route::delete('/materi/{id}', [MaterialController::class, 'destroy'])->name('admin.materi.destroy');
+// 1. Halaman Daftar (Index)
+    Route::get('/articles', [ArticleController::class, 'adminIndex'])->name('admin.articles.index');
+    
+    // 2. Halaman Form Tambah (Create)
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('admin.articles.create');
+    
+    // 3. Proses Simpan Data (Store)
+    Route::post('/articles', [ArticleController::class, 'store'])->name('admin.articles.store');
+    
+    // 4. Halaman Form Edit (Edit)
+    Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('admin.articles.edit');
+    
+    // 5. Proses Update Data (Update)
+    Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('admin.articles.update');
+    
+    // 6. Proses Hapus Data (Destroy)
+    Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('admin.articles.destroy');
 
 });
+
+Route::post('/chatbot/send', [ChatbotController::class, 'chat'])->name('chatbot.send');
 
 Route::get('/cek-role', function() {
     if (Auth::check()) {
         return "Halo " . Auth::user()->name . "! Kamu SUDAH LOGIN. Role kamu di mata sistem adalah: [" . Auth::user()->role . "]";
     }
     return "Sistem mendeteksi kamu BELUM LOGIN alias tamu.";
+});
+
+Route::get('/cek-bot', function() {
+    $apiKey = env('GEMINI_API_KEY');
+    return Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}")->json();
 });

@@ -19,5 +19,6 @@ class Material extends Model
 
     protected $casts = [
         'interactive_quiz' => 'array',
+        'post_test' => 'array',
     ];
 }

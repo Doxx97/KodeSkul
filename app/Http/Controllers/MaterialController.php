@@ -29,6 +29,7 @@ class MaterialController extends Controller
             'description' => 'required', // <--- Tambahkan validasi deskripsi
             'content' => 'required',
             'video_url' => 'nullable|string',
+            //'post_test' => 'nullable|string'
         ]);
 
         // Logika Ekstrak ID YouTube
@@ -50,8 +51,8 @@ class MaterialController extends Controller
             'description' => $request->description, // <--- Tangkap data deskripsi
             'content' => $request->content,
             'video_url' => $videoId,
-            'interactive_quiz' => $request->has('interactive_quiz') ? json_encode($request->interactive_quiz) : null,
-            'post_test' => $request->has('post_test') ? json_encode($request->post_test) : null,
+            'interactive_quiz' => $request->interactive_quiz ? json_encode($request->interactive_quiz) : null,
+            //'post_test' => $request->post_test ? json_encode($request->post_test) : null,
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Materi baru berhasil ditambahkan! 🚀');
@@ -97,7 +98,7 @@ class MaterialController extends Controller
             'content' => $request->content,
             'video_url' => $videoId,
             'interactive_quiz' => $request->has('interactive_quiz') ? json_encode($request->interactive_quiz) : null,
-            'post_test' => $request->has('post_test') ? json_encode($request->post_test) : null,
+            //'post_test' => $request->has('post_test') ? json_encode($request->post_test) : null,
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Materi berhasil diperbarui! ✅');

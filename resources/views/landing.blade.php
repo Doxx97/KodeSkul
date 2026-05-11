@@ -4,24 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KodeSkul - E-Learning Masa Kini</title>
-    
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/logo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        /* 1. Animasi Masuk (Fade In + Slide Up) */
+        /* 1. Animasi Masuk Utama (Fade In + Slide Up) */
         .animate-fade-in-up {
             animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
             transform: translateY(40px);
         }
-        
-        /* Jeda waktu animasi agar elemen muncul bergantian */
-        .delay-100 { animation-delay: 0.2s; }
-        .delay-200 { animation-delay: 0.4s; }
-        .delay-300 { animation-delay: 0.6s; }
         
         @keyframes fadeInUp {
             to {
@@ -30,21 +25,84 @@
             }
         }
 
-        /* 2. Animasi Background Melayang */
-        .floating-shape {
-            animation: float 6s ease-in-out infinite;
+        /* Jeda waktu animasi agar elemen muncul bergantian */
+        .delay-100 { animation-delay: 0.2s; }
+        .delay-200 { animation-delay: 0.4s; }
+        .delay-300 { animation-delay: 0.6s; }
+
+        /* 2. Animasi Liquid & Random Movement */
+        
+        /* Mengubah bentuk secara organik */
+        @keyframes shape-shift {
+            0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+            25% { border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%; }
+            50% { border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%; }
+            75% { border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%; }
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
+
+        /* Pergerakan posisi melayang tipe A */
+        @keyframes float-random-a {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(3vw, -5vh) rotate(5deg); }
+            66% { transform: translate(-2vw, 2vh) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* Pergerakan posisi melayang tipe B */
+        @keyframes float-random-b {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-3vw, 4vh) rotate(-10deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .blob-base {
+            position: absolute;
+            mix-blend-mode: multiply;
+            filter: blur(80px);
+            opacity: 0.45;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        /* Blob Indigo (Kiri Atas) */
+        .blob-1 {
+            background: #818cf8;
+            width: 650px; height: 650px;
+            top: -150px; left: -150px;
+            animation-name: shape-shift, float-random-a;
+            animation-duration: 15s, 22s;
+        }
+
+        /* Blob Rose (Kanan Bawah) */
+        .blob-2 {
+            background: #fb7185;
+            width: 750px; height: 750px;
+            bottom: -200px; right: -150px;
+            animation-name: shape-shift, float-random-b;
+            animation-duration: 18s, 25s;
+            animation-delay: -2s;
+        }
+
+        /* Blob Ungu (Tengah/Acak) */
+        .blob-3 {
+            background: #c084fc;
+            width: 500px; height: 500px;
+            top: 20%; right: 20%;
+            animation-name: shape-shift, float-random-a;
+            animation-duration: 20s, 30s;
+            animation-direction: reverse;
+            opacity: 0.3;
         }
     </style>
 </head>
 <body class="bg-slate-50 overflow-hidden relative flex items-center justify-center min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
 
-    {{-- Efek Latar Belakang Estetik (Blob Colors) --}}
-    <div class="absolute top-[-10%] left-[-10%] w-[30rem] h-[30rem] bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 floating-shape"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] bg-rose-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 floating-shape" style="animation-delay: 2s;"></div>
+    {{-- Layer Latar Belakang Liquid Dinamis --}}
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="blob-base blob-1"></div>
+        <div class="blob-base blob-2"></div>
+        <div class="blob-base blob-3"></div>
+    </div>
 
     {{-- Konten Utama Hero --}}
     <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
@@ -69,7 +127,7 @@
             Tinggalkan cara lama! Di KodeSkul, kamu akan menguasai HTML, CSS, dan JavaScript lewat video interaktif dan sistem kuis yang langsung muncul saat kamu menonton.
         </p>
         
-        {{-- Tombol Aksi (Otomatis menyesuaikan status login) --}}
+        {{-- Tombol Aksi --}}
         <div class="flex flex-col sm:flex-row items-center justify-center gap-5 animate-fade-in-up delay-300">
             @auth
                 {{-- Jika User SUDAH Login --}}

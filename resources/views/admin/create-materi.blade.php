@@ -105,20 +105,6 @@
                         </div>
                     </div>
 
-                    {{-- BAGIAN POST-TEST --}}
-                    <div class="space-y-4 pt-6 border-t border-slate-100">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <label class="block text-lg font-bold text-slate-700">📝 Buat Soal Post-Test (Opsional)</label>
-                                <p class="text-xs text-slate-500 mt-1">Syarat lulus materi. Siswa harus mendapat nilai 80 untuk lanjut bab.</p>
-                            </div>
-                            <button type="button" onclick="tambahPostTest()" class="text-sm px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-bold hover:bg-indigo-100 transition-colors">
-                                + Tambah Soal
-                            </button>
-                        </div>
-                        <div id="post-test-container" class="space-y-6"></div>
-                    </div>
-
                     <div class="pt-6 border-t border-slate-100">
                         <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-4 px-10 rounded-2xl shadow-lg shadow-indigo-200 transition-all duration-300 transform hover:-translate-y-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -182,40 +168,6 @@
         videoQuizCount++;
     }
     function hapusVideoQuiz(id) { document.getElementById('video-quiz-' + id).remove(); }
-
-    /* ====== SCRIPT SOAL POST TEST ====== */
-    let postTestCount = 0;
-    function tambahPostTest() {
-        const container = document.getElementById('post-test-container');
-        const html = `
-        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 relative" id="post-test-${postTestCount}">
-            <button type="button" onclick="hapusPostTest(${postTestCount})" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold">X Hapus</button>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-sm font-bold text-slate-700">Pertanyaan</label>
-                    <input type="text" name="post_test[${postTestCount}][pertanyaan]" required class="w-full mt-1 p-3 rounded-lg border border-slate-300">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold">Opsi A</label><input type="text" name="post_test[${postTestCount}][opsi_a]" required class="w-full p-2 border rounded"></div>
-                    <div><label class="text-xs font-bold">Opsi B</label><input type="text" name="post_test[${postTestCount}][opsi_b]" required class="w-full p-2 border rounded"></div>
-                    <div><label class="text-xs font-bold">Opsi C</label><input type="text" name="post_test[${postTestCount}][opsi_c]" required class="w-full p-2 border rounded"></div>
-                    <div><label class="text-xs font-bold">Opsi D</label><input type="text" name="post_test[${postTestCount}][opsi_d]" required class="w-full p-2 border rounded"></div>
-                </div>
-                <div>
-                    <label class="text-sm font-bold text-slate-700">Jawaban Benar</label>
-                    <select name="post_test[${postTestCount}][jawaban_benar]" required class="w-full p-3 border rounded-lg">
-                        <option value="a">Opsi A</option>
-                        <option value="b">Opsi B</option>
-                        <option value="c">Opsi C</option>
-                        <option value="d">Opsi D</option>
-                    </select>
-                </div>
-            </div>
-        </div>`;
-        container.insertAdjacentHTML('beforeend', html);
-        postTestCount++;
-    }
-    function hapusPostTest(id) { document.getElementById('post-test-' + id).remove(); }
 </script>
 
 <style>

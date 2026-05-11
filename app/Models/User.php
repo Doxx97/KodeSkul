@@ -34,8 +34,13 @@ class User extends Authenticatable
     // 👇 UPDATE DI SINI: Tambahkan withPivot agar kolom score ikut terbaca/tersimpan 👇
     public function completedMaterials()
     {
-        return $this->belongsToMany(Material::class, 'material_progresses')
+        // 'material_user' adalah nama tabel pivot kamu
+        return $this->belongsToMany(Material::class, 'material_user')
                     ->withPivot('is_completed', 'score')
                     ->withTimestamps();
+    }
+    public function certificates()
+    {
+        return $this->hasMany(\App\Models\Certificate::class); // Pakai \App\Models langsung
     }
 }
